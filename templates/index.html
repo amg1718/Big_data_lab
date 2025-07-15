@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retail Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto py-8">
+        <nav class="mb-8 flex gap-4 justify-center">
+            <a href="#top-customers" class="text-blue-700 hover:underline">Top Customers</a>
+            <a href="#avg-order-value" class="text-blue-700 hover:underline">Average Order Value</a>
+            <a href="#order-status-dist" class="text-blue-700 hover:underline">Order Status Distribution</a>
+        </nav>
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Retail Analytics Dashboard</h1>
+        
+        <!-- Real-Time Data Table -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Real-Time Transactions</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full text-sm text-left text-gray-700">
+                    <thead class="bg-blue-100">
+                        <tr>
+                            <th class="px-4 py-2">Transaction ID</th>
+                            <th class="px-4 py-2">Customer ID</th>
+                            <th class="px-4 py-2">Name</th>
+                            <th class="px-4 py-2">Product Category</th>
+                            <th class="px-4 py-2">Amount</th>
+                            <th class="px-4 py-2">Ratings</th>
+                            <th class="px-4 py-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="data-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Sales Over Time -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Sales Over Time</h2>
+            <div class="flex flex-wrap gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Start Date</label>
+                    <input type="date" id="salesStart" class="border rounded px-2 py-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">End Date</label>
+                    <input type="date" id="salesEnd" class="border rounded px-2 py-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Category</label>
+                    <select id="salesCategory" class="border rounded px-2 py-1">
+                        <option value="">All</option>
+                        <option value="Clothing">Clothing</option>
+                        <option value="Home Decor">Home Decor</option>
+                        <option value="Books">Books</option>
+                        <option value="Grocery">Grocery</option>
+                        <option value="Electronics">Electronics</option>
+                        <!-- Add more categories as needed -->
+                    </select>
+                </div>
+                <button onclick="fetchSalesChart()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 self-end">Apply</button>
+            </div>
+            <canvas id="salesChart" height="80"></canvas>
+        </div>
+        
+        <!-- Product Popularity -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Product Popularity</h2>
+            <div class="flex flex-wrap gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Start Date</label>
+                    <input type="date" id="popStart" class="border rounded px-2 py-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">End Date</label>
+                    <input type="date" id="popEnd" class="border rounded px-2 py-1">
+                </div>
+                <button onclick="fetchPopularityChart()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 self-end">Apply</button>
+            </div>
+            <canvas id="popularityChart" height="80"></canvas>
+        </div>
+        
+        <!-- Product Recommendations -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-semibold mb-4">Product Recommendations</h2>
+            <div class="flex items-center mb-4">
+                <input id="customerId" type="text" placeholder="Enter Customer ID" class="border border-gray-300 rounded px-3 py-2 mr-2 focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <button onclick="getRecommendations()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Get Recommendations</button>
+            </div>
+            <ul id="recommendations" class="list-disc pl-5 text-gray-700"></ul>
+        </div>
+
+        <!-- Top Customers -->
+        <div id="top-customers" class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Top Customers</h2>
+            <table class="min-w-full text-sm text-left text-gray-700">
+                <thead class="bg-blue-100">
+                    <tr>
+                        <th class="px-4 py-2">Customer ID</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Total Spent</th>
+                    </tr>
+                </thead>
+                <tbody id="topCustomersBody"></tbody>
+            </table>
+        </div>
+        <!-- Average Order Value -->
+        <div id="avg-order-value" class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Average Order Value Over Time</h2>
+            <canvas id="avgOrderValueChart" height="80"></canvas>
+        </div>
+        <!-- Order Status Distribution -->
+        <div id="order-status-dist" class="bg-white rounded-lg shadow p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Order Status Distribution</h2>
+            <div class="flex justify-center">
+                <div class="w-[300px] h-[300px]">
+                    <canvas id="orderStatusChart" width="300" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    
+    async function fetchData() {
+        const res = await fetch("/data");
+        const data = await res.json();
+        const tableBody = document.getElementById("data-body");
+        tableBody.innerHTML = "";
+        data.forEach(item => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td class='px-4 py-2'>${item.Transaction_ID}</td>
+                <td class='px-4 py-2'>${item.Customer_ID}</td>
+                <td class='px-4 py-2'>${item.Name}</td>
+                <td class='px-4 py-2'>${item.Product_Category}</td>
+                <td class='px-4 py-2'>${item.Amount}</td>
+                <td class='px-4 py-2'>${item.Ratings}</td>
+                <td class='px-4 py-2'>${item.Order_Status}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+    setInterval(fetchData, 5000);
+    window.onload = fetchData;
+
+    let salesChartInstance = null;
+    function fetchSalesChart() {
+        const start = document.getElementById('salesStart').value;
+        const end = document.getElementById('salesEnd').value;
+        const category = document.getElementById('salesCategory').value;
+        let url = '/historical_sales?';
+        if (start) url += `start=${start}&`;
+        if (end) url += `end=${end}&`;
+        if (category) url += `category=${encodeURIComponent(category)}&`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(d => {
+                    const date = new Date(d.Date || d.date);
+                    if (!isNaN(date)) {
+                        return date.toISOString().split('T')[0];
+                    } else {
+                        return d.Date || d.date;
+                    }
+                });
+                const sales = data.map(d => d.Total_Amount || d.total_amount);
+                if (salesChartInstance) salesChartInstance.destroy();
+                salesChartInstance = new Chart(document.getElementById('salesChart'), {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Sales',
+                            data: sales,
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37,99,235,0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { title: { display: true, text: 'Date' } },
+                            y: { title: { display: true, text: 'Total Sales' } }
+                        }
+                    }
+                });
+            });
+    }
+
+    let popChartInstance = null;
+    function fetchPopularityChart() {
+        const start = document.getElementById('popStart').value;
+        const end = document.getElementById('popEnd').value;
+        let url = '/product_popularity?';
+        if (start) url += `start=${start}&`;
+        if (end) url += `end=${end}&`;
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const labels = data.map(d => d.product);
+                const sales = data.map(d => d.total_sales);
+                if (popChartInstance) popChartInstance.destroy();
+                popChartInstance = new Chart(document.getElementById('popularityChart'), {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Total Sales',
+                            data: sales,
+                            backgroundColor: '#38bdf8'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { title: { display: true, text: 'Product Type' } },
+                            y: { title: { display: true, text: 'Sales' } }
+                        }
+                    }
+                });
+            });
+    }
+
+    // Call on load
+    fetchSalesChart();
+    fetchPopularityChart();
+
+    // Product Recommendations
+    function getRecommendations() {
+        const customerId = document.getElementById('customerId').value;
+        if (!customerId) {
+            alert('Please enter a Customer ID');
+            return;
+        }
+        fetch(`/recommend/${customerId}`)
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('recommendations');
+                list.innerHTML = '';
+                if (data.length === 0) {
+                    list.innerHTML = '<li>No recommendations found.</li>';
+                } else {
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = 'Product ID: ' + item;
+                        list.appendChild(li);
+                    });
+                }
+            });
+    }
+
+    // Top Customers Table
+    fetch('/top_customers')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('topCustomersBody');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class='px-4 py-2'>${row.Customer_ID}</td><td class='px-4 py-2'>${row.Name}</td><td class='px-4 py-2'>${row.Total_Amount.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+        });
+
+    // Average Order Value Chart
+    fetch('/avg_order_value')
+        .then(res => res.json())
+        .then(data => {
+            // Format the date as YYYY-MM-DD for x-axis
+            const labels = data.map(d => {
+                const date = new Date(d.Date);
+                if (!isNaN(date)) {
+                    return date.toISOString().split('T')[0];
+                } else {
+                    return d.Date;
+                }
+            });
+            const values = data.map(d => d.Avg_Order_Value);
+            new Chart(document.getElementById('avgOrderValueChart'), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Avg Order Value',
+                        data: values,
+                        borderColor: '#16a34a',
+                        backgroundColor: 'rgba(22,163,74,0.1)',
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Date' } },
+                        y: { title: { display: true, text: 'Avg Order Value' } }
+                    }
+                }
+            });
+        });
+
+    // Order Status Distribution Chart
+    fetch('/order_status_dist')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(d => d.Order_Status);
+            const counts = data.map(d => d.Count);
+            new Chart(document.getElementById('orderStatusChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Order Status',
+                        data: counts,
+                        backgroundColor: ['#2563eb', '#16a34a', '#f59e42', '#f43f5e', '#a21caf', '#eab308']
+                    }]
+                },
+                options: { responsive: false }
+            });
+        });
+    </script>
+</body>
+</html>

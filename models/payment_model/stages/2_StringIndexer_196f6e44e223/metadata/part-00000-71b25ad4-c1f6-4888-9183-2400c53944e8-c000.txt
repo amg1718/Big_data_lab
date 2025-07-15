@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.StringIndexerModel","timestamp":1750930219877,"sparkVersion":"4.0.0","uid":"StringIndexer_196f6e44e223","paramMap":{"inputCol":"Income","outputCol":"Income_idx","handleInvalid":"keep"},"defaultParamMap":{"outputCol":"StringIndexer_196f6e44e223__output","handleInvalid":"error","stringOrderType":"frequencyDesc"}}

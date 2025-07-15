@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Average Order Value</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto py-8">
+        <nav class="mb-8 flex gap-4 justify-center">
+            <a href="/" class="text-blue-700 hover:underline">Dashboard</a>
+            <a href="/top_customers.html" class="text-blue-700 hover:underline">Top Customers</a>
+            <a href="/avg_order_value.html" class="text-blue-700 hover:underline font-bold">Average Order Value</a>
+            <a href="/order_status_dist.html" class="text-blue-700 hover:underline">Order Status Distribution</a>
+        </nav>
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Average Order Value Over Time</h1>
+        <canvas id="avgOrderValueChart" width="600" height="400"></canvas>
+    </div>
+    <script>
+    fetch('/avg_order_value')
+        .then(res => res.json())
+        .then(data => {
+            // Format the date as YYYY-MM-DD for y-axis
+            const yLabels = data.map(d => {
+                const date = new Date(d.Date);
+                if (!isNaN(date)) {
+                    return date.toISOString().split('T')[0];
+                } else {
+                    return d.Date;
+                }
+            });
+            const xValues = data.map(d => d.Avg_Order_Value);
+            new Chart(document.getElementById('avgOrderValueChart'), {
+                type: 'bar',
+                data: {
+                    labels: yLabels,
+                    datasets: [{
+                        label: 'Avg Order Value',
+                        data: xValues,
+                        backgroundColor: 'rgba(22,163,74,0.5)',
+                        borderColor: '#16a34a',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Avg Order Value' } },
+                        y: { title: { display: true, text: 'Date (Timestamp)' } }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html> 

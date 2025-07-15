@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Order Status Distribution</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto py-8">
+        <nav class="mb-8 flex gap-4 justify-center">
+            <a href="/" class="text-blue-700 hover:underline">Dashboard</a>
+            <a href="/top_customers.html" class="text-blue-700 hover:underline">Top Customers</a>
+            <a href="/avg_order_value.html" class="text-blue-700 hover:underline">Average Order Value</a>
+            <a href="/order_status_dist.html" class="text-blue-700 hover:underline font-bold">Order Status Distribution</a>
+        </nav>
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Order Status Distribution</h1>
+        <div class="flex justify-center">
+            <div class="w-[30px] h-[30px]">
+                <canvas id="orderStatusChart" width="30" height="30"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+    fetch('/order_status_dist')
+        .then(res => res.json())
+        .then(data => {
+            const labels = data.map(d => d.Order_Status);
+            const counts = data.map(d => d.Count);
+            new Chart(document.getElementById('orderStatusChart'), {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Order Status',
+                        data: counts,
+                        backgroundColor: ['#2563eb', '#16a34a', '#f59e42', '#f43f5e', '#a21caf', '#eab308']
+                    }]
+                },
+                options: { responsive: false }
+            });
+        });
+    </script>
+</body>
+</html> 

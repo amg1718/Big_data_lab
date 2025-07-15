@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Top Customers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto py-8">
+        <nav class="mb-8 flex gap-4 justify-center">
+            <a href="/" class="text-blue-700 hover:underline">Dashboard</a>
+            <a href="/top_customers.html" class="text-blue-700 hover:underline font-bold">Top Customers</a>
+            <a href="/avg_order_value.html" class="text-blue-700 hover:underline">Average Order Value</a>
+            <a href="/order_status_dist.html" class="text-blue-700 hover:underline">Order Status Distribution</a>
+        </nav>
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-700">Top Customers</h1>
+        <table class="min-w-full text-sm text-left text-gray-700">
+            <thead class="bg-blue-100">
+                <tr>
+                    <th class="px-4 py-2">Customer ID</th>
+                    <th class="px-4 py-2">Name</th>
+                    <th class="px-4 py-2">Total Spent</th>
+                </tr>
+            </thead>
+            <tbody id="topCustomersBody"></tbody>
+        </table>
+    </div>
+    <script>
+    fetch('/top_customers')
+        .then(res => res.json())
+        .then(data => {
+            const tbody = document.getElementById('topCustomersBody');
+            tbody.innerHTML = '';
+            data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td class='px-4 py-2'>${row.Customer_ID}</td><td class='px-4 py-2'>${row.Name}</td><td class='px-4 py-2'>${row.Total_Amount.toFixed(2)}</td>`;
+                tbody.appendChild(tr);
+            });
+        });
+    </script>
+</body>
+</html> 

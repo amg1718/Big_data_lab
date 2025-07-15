@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.VectorAssembler","timestamp":1750930220174,"sparkVersion":"4.0.0","uid":"VectorAssembler_77c9cfd277b9","paramMap":{"outputCol":"features","handleInvalid":"skip","inputCols":["Customer_Segment_idx","Shipping_Method_idx","Income_idx","Total_Amount"]},"defaultParamMap":{"outputCol":"VectorAssembler_77c9cfd277b9__output","handleInvalid":"error"}}

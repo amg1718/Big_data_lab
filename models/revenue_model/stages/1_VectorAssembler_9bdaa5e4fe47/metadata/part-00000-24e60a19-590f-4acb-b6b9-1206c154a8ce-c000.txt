@@ -1,0 +1,1 @@
+{"class":"org.apache.spark.ml.feature.VectorAssembler","timestamp":1750930665321,"sparkVersion":"4.0.0","uid":"VectorAssembler_9bdaa5e4fe47","paramMap":{"outputCol":"features","handleInvalid":"skip","inputCols":["Age","Total_Purchases","Ratings","Customer_Segment_idx"]},"defaultParamMap":{"outputCol":"VectorAssembler_9bdaa5e4fe47__output","handleInvalid":"error"}}
